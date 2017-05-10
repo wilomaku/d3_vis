@@ -79,16 +79,16 @@
 	<script type="text/javascript">	
 
 		var sortpoints = function() {
-			svg.select(".point")
+			svg.selectAll("circle")
 			   .sort(function(a, b) {return d3.ascending(a, b);})
 			   .transition()
 			   .duration(1000)
 			   .delay(function(d, i) {return i / 150000;})//d.length * 1000;})
 			   //.on("start", function() {d3.select(this).attr("fill", "magenta").attr("r", 3);})
-			   .attr("cx", 100)
-			   .attr("cy", 0.5);
+			   .attr("cx", function(d, i) {return x(d);})
+			   .attr("cy", function(d, i) {return y(d);});
 			   //.on("end", function() {d3.select(this).transition().duration(1000).attr("fill", "blue");});;
-			};		
+			};
 
 		var w = 800;
 		var h = 500;
@@ -176,11 +176,12 @@
    		.on("mouseout", function() {
 		d3.select("#tooltip").classed("hidden", true);
 		});
-		});
 
 		//On click, update with new data
 		d3.select("p").on("click", function() {
 			sortpoints();
+		});
+
 		});
 
 	</script>
