@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3 Teste Template</title>
+		<script type="text/javascript" src="d3/d3.js"></script>
+
+		<style type="text/css">	
+			div.bar {
+			display: inline-block;
+			width: 20px;
+			height: 75px; /* We'll override height later */
+			background-color: teal;
+			margin-right: 2px;
+			}
+
+			.axis path,
+			.axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+			}
+			.axis text {
+			font-family: sans-serif;
+			font-size: 11px;
+			fill: black;
+			}
+
+			.caption {
+			text-align: center;
+			}
+
+			circle:hover {
+				fill: orange;
+			}
+
+			#tooltip {
+				position: absolute;
+				width: 200px;
+				height: auto;
+				padding: 10px;
+				background-color: white;
+				-webkit-border-radius: 10px;
+				-moz-border-radius: 10px;
+				border-radius: 10px;
+				-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+				-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+				box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+				pointer-events: none;
+			}
+			
+			#tooltip.hidden {
+				display: none;
+			}
+			
+			#tooltip p {
+				margin: 0;
+				font-family: sans-serif;
+				font-size: 10px;
+				line-height: 16px;
+			}
+
+		</style>
+
+	</head>
+	<body>
+
+	<p>Don't click here (just one time please!).</p>
+
+	<div id="tooltip" class="hidden">
+			<p><strong>Value:</strong></p>
+			<p><span id="value">100</span>%</p>
+			<img id="padr" src="xsb_mmorph37660_001.png" alt="Segmentation" style="width:200px;height:100px;">
+			<div class="caption">REFERENCE</div>
+			<img id="segm" src="xsb_mmorph37660_001.png" alt="Segmentation" style="width:200px;height:100px;">
+			<div class="caption">SEGMENTATION</div>
+	</div>
+
+	<script type="text/javascript">	
+
+		var sortBars = function() {
+			svg.selectAll("circle")
+			   .sort(function(a, b) {return d3.ascending(a, b);})
+			   .transition()
+			   .duration(1000)
+			   .delay(function(d, i) {return i / dice_data.length * 1000;})
+			   //.on("start", function() {d3.select(this).attr("fill", "magenta").attr("r", 3);})
+			   .attr("cx", function(d, i) {return xScale(i);})
+			   .attr("cy", function(d, i) {return yScale(d);});
+			   //.on("end", function() {d3.select(this).transition().duration(1000).attr("fill", "blue");});;
+			};		
+
+		var w = 800;
+		var h = 500;
+		var padding = 30;
+
+		//Define datasets
+		var dice_data = [0.85337,0.00000,0.85311,0.82759,0.89602,0.80000,0.00000,0.76167,0.75000,0.81775,
+				 0.00000,0.86686,0.86875,0.89806,0.29693,0.84682,0.86144,0.84311,0.00000,0.87097,
+				 0.83679,0.76140,0.80980,0.87237,0.86072,0.88076,0.00000,0.85455,0.84011,0.84706,
+				 0.00000,0.89602,0.67143,0.67699,0.84305,0.83908,0.82555,0.88602,0.85369,0.86445,
+				 0.85457,0.82576,0.86930,0.79434,0.84507,0.61635,0.85873,0.88299,0.88364,0.84514,
+				 0.84762,0.86582,0.82300,0.85269,0.83520,0.83587,0.86088,0.84570,0.84928,0.87906,
+				 0.83788,0.00000,0.82920,0.91066,0.85346,0.81081,0.81779,0.00000,0.84568,0.00000,
+				 0.33542,0.89205,0.83768,0.88418,0.83832,0.00000,0.00000,0.82944,0.00000,0.87467,
+				 0.85793,0.87308,0.77356,0.86085,0.85192,0.86832,0.86538,0.84485,0.85442,0.85046,
+				 0.56992,0.83333,0.00288,0.76519,0.88821,0.79400,0.00000,0.82031,0.00000,0.84553,
+				 0.87920,0.75691,0.85846,0.80364,0.85299,0.85948,0.86769,0.83652,0.82445,0.00000,
+				 0.00000,0.83232,0.86154,0.80229,0.58680,0.68515,0.18067,0.81535,0.70120,0.84247,
+				 0.83519,0.83737,0.85405,0.84713,0.00000,0.66405,0.86370,0.05079,0.86341,0.00000,
+				 0.00000,0.00000,0.84555,0.85146,0.87216,0.82371,0.86202,0.86460,0.82849,0.82934,
+				 0.21180,0.85558,0.83135,0.90812,0.86562];
+
+		//Define scale
+		var xScale = d3.scaleLinear().domain([0, d3.max(dice_data, function(d,i) { return i; })]).range([padding, w-padding*2]);
+		var yScale = d3.scaleLinear().domain([0, d3.max(dice_data, function(d) { return d; })]).range([h-padding, padding]);
+
+		var xAxis = d3.axisBottom().scale(xScale).ticks(5);
+		var yAxis = d3.axisLeft().scale(yScale).ticks(5);
+
+		//Define Canvas		
+		var svg = d3.select("body")
+		.append("svg")
+		.attr("width", w)
+		.attr("height", h)
+		
+		//Define clipping path
+		svg.append("clipPath").attr("id", "chart-area").append("rect")
+		.attr("x", padding).attr("y", padding).attr("width", w - padding*3).attr("height", h - padding*2);
+
+		//Plot circles		
+		svg.append("g")
+		.attr("id", "circles")
+		.attr("clip-path", "url(#chart-area)")
+		.selectAll("circle")
+		.data(dice_data)
+		.enter()
+		.append("circle")
+		.attr("cx", function(d,i) {return xScale(i);})
+		.attr("cy", function(d) {return yScale(d);})
+		.attr("r", 4)
+		.on("mouseover", function(d,i) {
+			//Get this bar's x/y values, then augment for the tooltip
+			var xPosition = parseFloat(d3.select(this).attr("cx")) + 20;			
+			if (d>0.5) {
+				var yPosition = parseFloat(d3.select(this).attr("cy")) - 10;}
+			else {
+				var yPosition = parseFloat(d3.select(this).attr("cy")) - 200;}
+			var imgpadr = "images/xsb_mmorph37660_"+(1+(i*6))+".png";
+			var imgsegm = "images/xsb_mmorph37660_"+(4+(i*6))+".png";
+
+			//tooltip.text("some text");
+			//Create the tooltip label
+			//Update the tooltip position and value
+			d3.select("#tooltip")
+			.style("left", xPosition + "px")
+			.style("top", yPosition + "px")
+			.select("#value")
+			.text(d);
+			d3.select("#tooltip").select("#padr")
+			.attr("src",imgpadr);
+			d3.select("#tooltip").select("#segm")
+			.attr("src",imgsegm);
+			//Show the tooltip
+			d3.select("#tooltip").classed("hidden", false);
+			})
+   		.on("mouseout", function() {
+		d3.select("#tooltip").classed("hidden", true);
+		});		
+		//.append("title").text(function(d) {return d;});
+
+		svg.append("g").attr("class", "axis").attr("transform", "translate(0," + (h - padding) + ")").call(xAxis)
+		svg.append("g").attr("class", "axis").attr("transform", "translate(" + padding + ",0)").call(yAxis)
+
+		//On click, update with new data
+		d3.select("p").on("click", function() {
+			sortBars();
+		});
+
+	</script>
+
+	</body>
+</html>
