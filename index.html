@@ -62,129 +62,210 @@
 
 		</style>
 
-	</head>
-	<body>
+</head>
+<body>
 
-	<p>Click to sort!!</p>
+	<button id="button1">Sort by Dice</button><button id="button2">Sort by RMSE</button>
 
 	<div id="tooltip" class="hidden">
-			<p><strong>Value:</strong></p>
-			<p><span id="value">100</span>%</p>
-			<img id="padr" src="xsb_mmorph37660_001.png" alt="Segmentation" style="width:200px;height:100px;">
-			<div class="caption">REFERENCE</div>
-			<img id="segm" src="xsb_mmorph37660_001.png" alt="Segmentation" style="width:200px;height:100px;">
-			<div class="caption">SEGMENTATION</div>
+		<p><strong>Value:</strong></p>
+		<p><span id="value">100</span>%</p>
+		<img id="padr" src="xsb_mmorph37660_001.png" alt="Segmentation" style="width:200px;height:100px;">
+		<div class="caption">REFERENCE</div>
+		<img id="segm" src="xsb_mmorph37660_001.png" alt="Segmentation" style="width:200px;height:100px;">
+		<div class="caption">SEGMENTATION</div>
 	</div>
 
-	<script type="text/javascript">	
+<script type="text/javascript"> 
 
-		var sortpoints = function() {
-			svg.selectAll("circle")
-			   .sort(function(a, b) {return d3.ascending(a, b);})
-			   .transition()
-			   .duration(1000)
-			   .delay(function(d, i) {return i / 150000;})//d.length * 1000;})
-			   //.on("start", function() {d3.select(this).attr("fill", "magenta").attr("r", 3);})
-			   .attr("cx", function(d, i) {return x(d);})
-			   .attr("cy", function(d, i) {return y(d);});
-			   //.on("end", function() {d3.select(this).transition().duration(1000).attr("fill", "blue");});;
-			};
+	var w = 1000;
+	var h = 500;
+	var padding = 30;
+	var ord = 0;
 
-		var w = 800;
-		var h = 500;
-		var padding = 30;
+	//var o_d = d3.csvParse(d3.select("order_dice.csv").text());
+	var o_d = [1,6,10,18,26,30,61,67,69,75,76,78,96,98,109,110,124,129,130,131,92,127,116,140,14,70,90,114,45,125,32,33,115,118,8,101,
+		   21,7,93,82,95,43,5,113,103,22,65,117,9,66,97,52,135,108,36,41,3,138,62,139,77,142,111,91,120,54,55,107,20,121,72,60,74,
+		   35,28,119,34,17,87,44,49,99,132,68,57,15,29,123,50,58,89,133,84,53,104,2,0,64,38,122,88,27,40,141,80,102,46,105,24,83,
+		   56,16,112,136,128,126,39,137,86,144,51,11,106,85,12,42,19,134,23,81,79,59,100,25,47,48,73,37,94,71,4,31,13,143,63]
+	//var o_r = d3.csvParse(d3.select("order_rmse.csv").text());	
+	var o_r = [63,60,4,80,112,94,39,73,25,27,74,100,105,20,136,83,58,51,64,143,70,113,134,127,23,132,91,71,84,126,123,59,81,108,119,
+		   116,43,88,28,117,141,115,8,40,15,2,53,3,49,120,24,44,16,121,133,0,137,47,99,11,46,104,82,31,12,97,95,34,56,42,107,128,86,
+		   13,138,29,48,93,102,35,85,111,79,41,140,65,135,87,106,68,118,17,62,50,5,72,36,9,125,66,77,55,89,19,22,57,122,142,21,103,
+		   38,32,139,144,45,61,101,37,14,75,7,30,54,10,129,98,52,69,96,130,76,6,124,110,90,78,33,92,67,114,1,26,18,109,131]
 
-		//Define scale
-		var x = d3.scaleLinear().range([padding, w-padding*2]);
-		var y = d3.scaleLinear().range([h-padding, padding]);
-		var z = d3.scaleOrdinal(d3.schemeCategory10);
+	//Define scale
+	var x = d3.scaleLinear().range([padding, w - padding * 2]);
+	var y = d3.scaleLinear().range([h - padding, padding]);
+	var z = d3.scaleOrdinal(d3.schemeCategory10);
 
-		var xAxis = d3.axisBottom().scale(x).ticks(10);
-		var yAxis = d3.axisLeft().scale(y).ticks(5);
+	var xAxis = d3.axisBottom().scale(x).ticks(10);
+	var yAxis = d3.axisLeft().scale(y).ticks(5);
 
-		//Define Canvas		
-		var svg = d3.select("body").append("svg").attr("width", w).attr("height", h)
-		
-		//Define clipping path
-		svg.append("clipPath").attr("id", "chart-area").append("rect")
-		.attr("x", padding).attr("y", padding).attr("width", w - padding*3).attr("height", h - padding*2);
+	//Define Canvas     
+	var svg = d3.select("body").append("svg").attr("width", w).attr("height", h)
 
-		//Loading CSV
-		d3.csv("eval_silver_standard.csv", function(error, data){
-			if (error) throw error;
+	//Define clipping path
+	svg.append("clipPath").attr("id", "chart-area").append("rect")
+	  .attr("x", padding).attr("y", padding)
+	  .attr("width", w - padding * 3).attr("height", h - padding * 2);
 
-			// Extract yn using key
-			var seriesNames = d3.keys(data[0])
-			.filter(function(d) { return d !== "x"; })
-			.sort();
+	//Loading CSV
+	d3.csv("eval_silver_standard.csv", function(error, data){
+	  if (error) throw error;
 
-			// Map data to cartesian tuple {x,y}
-			var series = seriesNames.map(function(series) {
-			return data.map(function(d) {
-			return {x: +d.x, y: +d[series]};
-			});
-			});
+	    // Extract yn using key
+	    var seriesNames = d3.keys(data[0])
+	      .filter(function(d) { return d !== "x"; })
+	      .sort();
 
-		// Compute domains
-		x.domain(d3.extent(d3.merge(series), function(d) { return d.x; })).nice();
-		y.domain(d3.extent(d3.merge(series), function(d) { return d.y; })).nice();
+	    // Map data to cartesian tuple {x,y}
+	    var series = seriesNames.map(function(series) {
+	      return data.map(function(d, i) {
+		return {x: +d.x, fx: +d.x, y: +d[series], u: Math.random()};
+	      });
+	    });
 
-		// X axis.
-		svg.append("g").attr("class", "axis").attr("transform", "translate(0," + (h - padding) + ")").call(xAxis)
+	var order0 = series[0].sort(function(a, b) {
+	  return d3.ascending(a.y, b.y)
+	}).map(function(e) {
+	  return e.x
+	});
 
-		// Y axis.
-		svg.append("g").attr("class", "axis").attr("transform", "translate(" + padding + ",0)").call(yAxis)
+	var order1 = series[1].sort(function(a, b) {
+	  return d3.ascending(a.y, b.y)
+	}).map(function(e) {
+	  return e.x
+	});
 
-		// Append circles
-		svg.selectAll(".series")
-		.data(series)
-		.enter().append("g")
-		.attr("class", "series")
-		.style("fill", function(d, i) { return z(i); })
-		.selectAll(".point")
-		.data(function(d) { return d; })
-		.enter().append("circle")
-		.attr("class", "point")
-		.attr("cx", function(d) { return x(d.x); })
-		.attr("cy", function(d) { return y(d.y); })
-		.attr("r", 4)
-		.on("mouseover", function(d,i) {
-			//Get this bar's x/y values, then augment for the tooltip
-			var xPosition = parseFloat(d3.select(this).attr("cx")) + 20;			
-			if (d.y>0.5) {
-				var yPosition = parseFloat(d3.select(this).attr("cy")) - 10;}
-			else {
-				var yPosition = parseFloat(d3.select(this).attr("cy")) - 200;}
-			var imgpadr = "images/xsb_mmorph37660_"+(1+(i*6))+".png";
-			var imgsegm = "images/xsb_mmorph37660_"+(4+(i*6))+".png";
+	// Compute domains
+	x.domain(d3.extent(d3.merge(series), function(d) {return d.x;})).nice();
+	y.domain(d3.extent(d3.merge(series), function(d) {return d.y;})).nice();
 
-			//tooltip.text("some text");
-			//Create the tooltip label
-			//Update the tooltip position and value
-			d3.select("#tooltip")
-			.style("left", xPosition + "px")
-			.style("top", yPosition + "px")
-			.select("#value")
-			.text(d.y);
-			d3.select("#tooltip").select("#padr")
-			.attr("src",imgpadr);
-			d3.select("#tooltip").select("#segm")
-			.attr("src",imgsegm);
-			//Show the tooltip
-			d3.select("#tooltip").classed("hidden", false);
-			})
-   		.on("mouseout", function() {
-		d3.select("#tooltip").classed("hidden", true);
-		});
+	// X axis.
+	svg.append("g").attr("class", "axis").attr("transform", "translate(0," + (h - padding) + ")").call(xAxis)
 
-		//On click, update with new data
-		d3.select("p").on("click", function() {
-			sortpoints();
-		});
+	// Y axis.
+	svg.append("g").attr("class", "axis").attr("transform", "translate(" + padding + ",0)").call(yAxis);
 
-		});
+	draw(series);
 
-	</script>
+	function draw(data) {
 
-	</body>
+	  // Append circles
+	  var groups = svg.selectAll(".series").data(data);
+
+	  var groupsEnter = groups.enter()
+	    .append("g")
+	    .attr("class", "series")
+	    .style("fill", function(d, i) {
+	      return z(i);
+	    });
+
+	  var circlesEnter = groupsEnter.selectAll(".point")
+	    .data(function(d) {
+	      return d;
+	    }, function(e) {
+	      return e.u
+	    }).enter().append("circle")
+	    .attr("class", "point")
+	    .attr("cx", function(d) {
+	      return x(d.x);
+	    })
+	    .attr("cy", function(d) {
+	      return y(d.y);
+	    })
+	    .attr("r", 4)
+	    .on("mouseover", function(d,i) {
+	      //Get this bar's x/y values, then augment for the tooltip
+	      var xPosition = parseFloat(d3.select(this).attr("cx")) + 20;
+	      if (ord==0) {
+		padr_segm = (d.x*6)}
+	      else if (ord==1) {
+		padr_segm = (o_d[d.x]*6)}
+	      else {
+		padr_segm = (o_r[d.x]*6)}
+	      if (d.y>0.5) {
+		var yPosition = parseFloat(d3.select(this).attr("cy")) - 10;}
+	      else {
+		var yPosition = parseFloat(d3.select(this).attr("cy")) - 200;}
+		//console.log("x", d.x);
+	        var imgpadr = "images/xsb_mmorph37660_"+ (1+padr_segm) +".png";
+	        var imgsegm = "images/xsb_mmorph37660_"+ (4+padr_segm) +".png";
+
+	      //tooltip.text("some text");
+	      //Create the tooltip label
+	      //Update the tooltip position and value
+	      d3.select("#tooltip")
+	      .style("left", xPosition + "px")
+	      .style("top", yPosition + "px")
+	      .select("#value")
+	      .text(d.y);
+	      d3.select("#tooltip").select("#padr")
+	      .attr("src",imgpadr);
+	      d3.select("#tooltip").select("#segm")
+	      .attr("src",imgsegm);
+	      //Show the tooltip
+	      d3.select("#tooltip").classed("hidden", false);
+	      })
+	    .on("mouseout", function() {
+	      d3.select("#tooltip").classed("hidden", true);
+	    });
+
+	  groups.selectAll(".point").data(function(d) {
+	      return d;
+	    }, function(e) {
+	      return e.u
+	    })
+	    .transition()
+	    .duration(2500)
+	    .attr("cx", function(d) {
+	      return x(d.x);
+	    })
+	    .attr("cy", function(d) {
+	      return y(d.y);
+	    })
+	    .attr("r", 4);
+	}
+
+	//On click, update order
+	d3.select("#button1").on("click", function() {
+	  ord = 1;
+	  series[0] = series[0].sort(function(a, b) {
+	    return d3.ascending(a.y, b.y)
+	  }).map(function(e, i) {
+	    return {
+	      x: i,
+	      fx: e.fx,
+	      y: e.y,
+	      u: e.u
+	    }
+	  });
+	  series[1].forEach(function(d, i, arr) {
+	    d.x = order0.indexOf(d.fx)
+	  });
+	  draw(series);
+	});
+
+	d3.select("#button2").on("click", function() {
+	  ord = 2;
+	  series[1] = series[1].sort(function(a, b) {
+	    return d3.ascending(a.y, b.y)
+	  }).map(function(e, i) {
+	    return {
+	      x: i,
+	      fx: e.fx,
+	      y: e.y,
+	      u: e.u
+	    }
+	  });
+	  series[0].forEach(function(d, i, arr) {
+	    d.x = order1.indexOf(d.fx)
+	  });
+	  draw(series);
+	});
+	});
+</script>
+
+</body>
 </html>
