@@ -1,8 +1,12 @@
 # wilomaku.github.io
-Tarefa T3 - Interactive visualization
 
-O uso da visualização é simples e intuitivo; porém a interpretação requer conhecimento e entendimento do problema. As opções de interação são:
-- Escolha de uma combinação segmentação-padrão
-- Ordenação pelo Dice ou pelo RMSE.
+Interactive visualization using d3
 
-Este projeto foi feito dentro da parceria com o hospital das clínicas da Unicamp, usando imagens adquiridas sob consentimento dos sujeitos.
+Give a try on https://wilomaku.github.io/ (select an option and play with the visualization)
+
+Interaction options are:
+- Select combination segmentation-reference.
+- Sort by Dice or RMSE.
+- Check the associated images by hovering along the points.
+
+This project was developed with the clinic hospital from Unicamp with consent from the involved subjects. More info at: http://miclab.fee.unicamp.br/
