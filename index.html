@@ -5,7 +5,7 @@
 		<title>D3 Teste Template</title>
 		<script type="text/javascript" src="d3/d3.js"></script>
 
-		<style type="text/css">	
+		<style type="text/css">
 			div.bar {
 			display: inline-block;
 			width: 20px;
@@ -49,11 +49,11 @@
 				box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
 				pointer-events: none;
 			}
-			
+
 			#tooltip.hidden {
 				display: none;
 			}
-			
+
 			#tooltip p {
 				margin: 0;
 				font-family: sans-serif;
@@ -64,8 +64,28 @@
 		</style>
 
 </head>
-<body>	
-	
+<body>
+
+	<h1>Comparing segmentation evaluation metrics (RMSE vs Dice)</h1>
+	<p>Segmentation is the process of dividing former components of an image into non-intersecting and homogeneous regions. Segmentation is the upmost importance since posterior
+		analysis, such as detection, measurement, and tracking, require the descomposition of the image into meaningful components. Particullarly, in this visualization,
+		segmentation of the corpus callosum (central region in charge of interconnection brain hemispheres) was accomplished using different methods.
+		For mesauring the quality of these segmentations, it is used a reference (gold-standard or silver-standard) and selected a metric (Dice or RMSE). Since different metrics
+		tell different parts of the history, the visualization allows to have a wider view of the comparison both, individually (by hovering on the points)
+		and as a whole (by looking at the plot interactive ordering). The goal is compare how three segmentation methods (Watershed, ROQS, and Pixel-Based) perform when
+		compared with three references (Registered, Semiautomatic, and STAPLE). The tool also allows to detect quickly anomalies, hard to see when looking only at one metric. </p>
+	<hr>
+	<h2>Brief visualization manual</h2>
+	<p>
+		<ol>
+		  <li>Select option: Select pair of segmentation vs reference to compare.</li>
+		  <li>Each segmentation (x-axis) has associated two measurements (DICE and RMSE) on the y-axis. By default the samples are unordered.</li>
+		  <li>Sort by the selected metric: Dice or RMSE, by clicking on the respective button. Remember: the higher the Dice better while the lower the RMSE better.</li>
+			<li>You can check individual cases by hovering on the points. This feature allows detect abnormalities (by looking at points off trend), and find out the reason behind an certain value.</li>
+		</ol>
+	</p>
+	<hr>
+
 	<div style="display: inline-block;
 	width: 45px;
 	height: 20px;
@@ -73,7 +93,7 @@
 	text: algu"><span>Dice</span></div>
 
 	<button id="button1">Sort by Dice</button>
-	
+
 	<div style="display: inline-block;
 	width: 55px;
 	height: 20px;
@@ -99,7 +119,7 @@
 
 	var array_std = [1,1,1,2,2,2,3,3,3]
 	var array_seg = [4,5,6,4,5,6,4,5,6]
-	
+
 	var w = 1000;
 	var h = 500;
 	var margin = {top: 20, right: 20, bottom: 50, left: 70}
@@ -147,7 +167,7 @@
 		    101,121,12,115,21,139,79,113,40,128,117,136,144,95,127,81,77,135,133,29,102,107,0,87,116,52,32,4,48,132,59,83,20,34,
 		    23,36,125,108,57,27,86,120,105,46,143,17,3,43,11,85,84,112,123,28,53,56,58,89,7,72,44,39,111,31,119,68,126,38,49,122,
 		    62,140,60,54,42,64,63,55,104,70,91,15,25,22,2,142,13,71,9,47,19,66,37,100,50,93,98,92,26,129,1,6,10,30,67,75,76,109,124]
-	//var o_r = d3.csvParse(d3.select("order_rmse.csv").text());	
+	//var o_r = d3.csvParse(d3.select("order_rmse.csv").text());
 	var o_r = [63,60,4,80,112,94,39,73,25,27,74,100,105,20,136,83,58,51,64,143,70,113,134,127,23,132,91,71,84,126,123,59,81,108,119,
 		    116,43,88,28,117,141,115,8,40,15,2,53,3,49,120,24,44,16,121,133,0,137,47,99,11,46,104,82,31,12,97,95,34,56,42,107,128,86,
 		    13,138,29,48,93,102,35,85,111,79,41,140,65,135,87,106,68,118,17,62,50,5,72,36,9,125,66,77,55,89,19,22,57,122,142,21,103,
@@ -213,14 +233,14 @@
 	d3.select("svg").remove();
 	ord = 0;
 
-	//Define Canvas     
+	//Define Canvas
 	var svg = d3.select("body").append("svg").attr("width", w).attr("height", h)
 
 	// X axis.
 	svg.append("g").attr("class", "axis").attr("transform", "translate(0," + (h - padding) + ")").call(xAxis)
 
 	// X name axis.
-	svg.append("text")             
+	svg.append("text")
 	.attr("transform", "translate(" + (w/2) + " ," +  (h-10) + ")")
 	.style("text-anchor", "middle")
 	.text("Subjects");
@@ -264,7 +284,7 @@
 	}).map(function(e) {
 	  return e.x
 	});
-	  	
+
 	draw(series);
 
 	function draw(data) {
