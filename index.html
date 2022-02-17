@@ -69,11 +69,16 @@
 	<h1>Comparing segmentation evaluation metrics (RMSE vs Dice)</h1>
 	<p>Segmentation is the process of dividing former components of an image into non-intersecting and homogeneous regions. Segmentation is the upmost importance since posterior
 		analysis, such as detection, measurement, and tracking, require the descomposition of the image into meaningful components. Particullarly, in this visualization,
-		segmentation of the corpus callosum[1] (central region in charge of interconnection brain hemispheres) was accomplished using different methods.
+		segmentation of the corpus callosum[<a href="https://www.sciencedirect.com/science/article/abs/pii/S0169260716314432">1</a>] (central region in charge of interconnection
+		brain hemispheres) was accomplished using different methods.
 		For mesauring the quality of these segmentations, it is used a reference (gold-standard or silver-standard) and selected a metric (Dice or RMSE). Since different metrics
 		tell different parts of the history, the visualization allows to have a wider view of the comparison both, individually (by hovering on the points)
-		and as a whole (by looking at the plot interactive ordering). The goal is compare how three segmentation methods (Watershed[2], ROQS[3], and Pixel-Based[4]) perform when
-		compared with three references (Registered, Semiautomatic, and STAPLE[5]). The tool also allows to detect quickly anomalies, hard to see when looking only at one metric. </p>
+		and as a whole (by looking at the plot interactive ordering). The goal is compare how three segmentation methods
+		(Watershed[<a href="https://link.springer.com/article/10.1007/s10851-012-0377-4">2</a>],
+		ROQS[<a href="https://www.sciencedirect.com/science/article/abs/pii/S1053811906010779">3</a>],
+		and Pixel-Based[<a href="https://link.springer.com/chapter/10.1007/978-3-319-68195-5_24">4</a>]) perform when compared with three references (Registered, Semiautomatic,
+		and STAPLE[<a href="https://ieeexplore.ieee.org/abstract/document/1309714">5</a>]). The tool also allows to detect quickly anomalies, hard to see when looking only at
+		one metric. </p>
 	<hr>
 	<h2>Brief visualization manual</h2>
 	<p>
@@ -404,18 +409,6 @@
 	});
 	};
 </script>
-
-<hr>
-<h2>References</h2>
-<p>
-	<ul>
-		<li>[1]<a href="https://www.sciencedirect.com/science/article/abs/pii/S0169260716314432">Computational methods for corpus callosum segmentation on MRI: A systematic literature review</a></li>
-		<li>[2]<a href="https://link.springer.com/article/10.1007/s10851-012-0377-4">Analysis of Scalar Maps for the Segmentation of the Corpus Callosum in Diffusion Tensor Fields</a></li>
-		<li>[3]<a href="https://www.sciencedirect.com/science/article/abs/pii/S1053811906010779">Diffusion tensor imaging segmentation of white matter structures using a Reproducible Objective Quantification Scheme (ROQS)</a></li>
-		<li>[4]<a href="https://link.springer.com/chapter/10.1007/978-3-319-68195-5_24">Pixel-Based Classification Method for Corpus Callosum Segmentation on Diffusion-MRI</a></li>
-		<li>[5]<a href="https://ieeexplore.ieee.org/abstract/document/1309714">Simultaneous truth and performance level estimation (STAPLE): an algorithm for the validation of image segmentation</a></li>
-	</ul>
-</p>
 
 </body>
 </html>
